@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import HomeView, DashboardView, UploadView, ProfileUpdateView, UserDeleteView, ProcessNotificationView, SaveTransactionView
+from .views import HomeView, DashboardView, UploadView, ProfileUpdateView, UserDeleteView, ProcessNotificationView, SaveTransactionView, SettingsView,FinancialSettingsUpdateView,MarkNotificationsReadView, ExportFinancialLogExcelView
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
@@ -11,4 +11,8 @@ urlpatterns = [
     path('profile/delete/', UserDeleteView.as_view(), name='user_delete'),
     path('process-notification/', ProcessNotificationView.as_view(), name='process_notification'),
     path('save-transaction/', SaveTransactionView.as_view(), name='save_transaction'),
+    path('settings/', SettingsView.as_view(), name='settings'),
+    path('settings/financial/update/', FinancialSettingsUpdateView.as_view(), name='update_financial_settings'),
+    path('mark-notifications-read/', MarkNotificationsReadView.as_view(), name='mark_notifications_read'),
+    path('export/excel/', ExportFinancialLogExcelView.as_view(), name='export_excel'),
 ]

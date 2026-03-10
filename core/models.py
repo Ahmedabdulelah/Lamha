@@ -1,5 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+
 
 class Transaction(models.Model):
     TYPE_CHOICES = [
@@ -21,3 +27,32 @@ class Transaction(models.Model):
         db_table = 'transactions'
         verbose_name = "عملية مالية"
         verbose_name_plural = "العمليات المالية"
+
+
+class UserSettings(models.Model):
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='settings')
+    
+    alert_threshold = models.DecimalField(max_digits=12, decimal_places=2, default=10000.00)
+    
+    use_currency_symbols = models.BooleanField(default=False)
+    notifications_enabled = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"إعدادات الحساب لـ {self.user.username}"
+
+@receiver(post_save, sender=User)
+def create_user_settings(sender, instance, created, **kwargs):
+    if created:
+        UserSettings.objects.create(user=instance)
+
+
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    title = models.CharField(max_length=255)
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
